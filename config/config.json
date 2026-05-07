@@ -1,0 +1,11 @@
+{
+    "dailyDuration" : 60,
+    "rules" : [
+        {"id":1,"name":"Bonus 10","duration":10},
+        {"id":2,"name":"Malus 10","duration":-10},
+        {"id":3,"name":"Bonus 20","duration":20},
+        {"id":4,"name":"Malus 20","duration":-20},
+        {"id":5,"name":"Bonus 30","duration":30},
+        {"id":6,"name":"Malus 30","duration":-30}
+    ]
+}
