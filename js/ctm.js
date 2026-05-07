@@ -49,6 +49,7 @@ class CTContext {
         this.timestamp = new Date();
         this.duration = 60;
         this.rules = [];   
+        this.locked = false;
         
         // load current context, check if expired
         if (this.loadContext()) {
@@ -62,8 +63,12 @@ class CTContext {
                 this.rules = configuration.rules;
                 this.timestamp = new Date();
                 this.history = [];
+                this.locked = false;
             }   
         }
+    }
+    lock() {
+        this.locked = true;
     }
     addRule(rule) {
         this.rules.push(rule);
@@ -92,6 +97,7 @@ class CTContext {
             this.timestamp = objContext.timestamp;
             this.rules = objContext.rules;
             this.duration = objContext.duration;
+            this.locked = objContext.locked;
             return true;
         }
         return false;
@@ -160,6 +166,15 @@ const ctViewManager = {
             ctMain.initialize();
         }
     },
+    clickTerminateContext: () => {
+        ctMain.context.lock();
+        ctMain.context.saveContext();
+        ctMain.initialize();
+    },
+    clickReset: () => {
+        window.localStorage.removeItem('CTContext');
+        ctMain.initialize();
+    },
     initEvents: () => {
         // menu
         $("#tdMenuHome").click(() => ctViewManager.clickMenu('home'));
@@ -168,10 +183,13 @@ const ctViewManager = {
 
         // btn
         $("#btnAddRuleHisto").click(() => ctViewManager.clickAddRuleHistory());
+        $("#btnTerminate").click(() => ctViewManager.clickTerminateContext());
+        $("#btnReset").click(() => ctViewManager.clickReset());
     },
     initPage: () => {
         // init home page
         ctViewManager.loadHomePage();
+        ctViewManager.loadConfigurationPage();
     },
     loadHomePage: () => {
         let content = "";
@@ -190,6 +208,19 @@ const ctViewManager = {
         content = $("#selListRules").html();
         ctMain.context.rules.forEach((rule,i) => content += "<option value='" + rule.id + "'>" + rule.name + " (" + rule.duration +  "mn)</option>");
         $("#selListRules").html(content);
+
+        if (ctMain.context.locked) {
+            $("#btnAddRuleHisto").prop('disabled',true);
+            $("#btnTerminate").prop('disabled',true);
+            $("#selListRules").prop('disabled',true);
+        }
+    },
+    loadConfigurationPage: () => {
+        let content = "";
+        content += "<tr><td></td><td>Nom</td><td>Valeur</td></tr>";
+        ctMain.configuration.rules.forEach((rule,i) => content += "<tr><td><input type='checkbox'/></td><td>" + rule.name + "</td><td>" + rule.duration + "</td></tr>");
+        $("#tblConfiguration").html(content);
+        $("#txtDailyDuration").val(ctMain.configuration.dailyDuration);
     }
 }
 
