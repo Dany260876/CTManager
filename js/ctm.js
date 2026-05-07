@@ -18,9 +18,15 @@ class CTConfiguration {
         let res = $.Deferred();
         $.get("./config/config.json")
             .done((data) => {
-              let config = JSON.parse(data);
-              this.dailyDuration = config.dailyDuration;
-              this.rules = config.rules;
+              if (data.dailyDuration) {
+                this.dailyDuration = data.dailyDuration;
+                this.rules = data.rules;     
+              }
+              else {
+                let config = JSON.parse(data);
+                this.dailyDuration = config.dailyDuration;
+                this.rules = config.rules;   
+              }
               res.resolve();
             })
             .fail(() => {
@@ -209,4 +215,3 @@ const ctMain = {
         });
     }
 }
-
