@@ -133,6 +133,29 @@ class CTTemplate {
 }
 
 /*
+* CTHistory : ct context history management
+*/
+class CTHistory {
+    constructor() {
+        this.listItems = [];
+        if (window.localStorage && window.localStorage['CTHistory']) {
+            let items = JSON.parse(window.localStorage['CTHistory']);
+            this.listItems = items;
+        }
+    }
+    addItem(context) {
+        let item = {};
+        item.date = new Date().toDateString();
+        item.duration = context.getTotalDuration();
+        item.history = context.history;
+        this.listItems.push(item);
+    }
+    save() {
+        window.localStorage['CTHistory'] = JSON.stringify(this.listItems);
+    }
+}
+
+/*
 * View manager
 */
 const ctViewManager = {
@@ -167,13 +190,21 @@ const ctViewManager = {
         }
     },
     clickTerminateContext: () => {
-        ctMain.context.lock();
-        ctMain.context.saveContext();
-        ctMain.initialize();
+        let result = confirm('Confirmer la fin de la session ?');
+        if (result==true) {
+            ctMain.history.addItem(ctMain.context);
+            ctMain.history.save();
+            ctMain.context.lock();
+            ctMain.context.saveContext();
+            ctMain.initialize();
+        }
     },
     clickReset: () => {
-        window.localStorage.removeItem('CTContext');
-        ctMain.initialize();
+        let result = confirm('Confirmer la reinitialisation ?');
+        if (result==true) {
+            window.localStorage.removeItem('CTContext');
+            ctMain.initialize();   
+        }
     },
     initEvents: () => {
         // menu
@@ -190,6 +221,7 @@ const ctViewManager = {
         // init home page
         ctViewManager.loadHomePage();
         ctViewManager.loadConfigurationPage();
+        ctViewManager.loadHistoPage();
     },
     loadHomePage: () => {
         let content = "";
@@ -221,6 +253,13 @@ const ctViewManager = {
         ctMain.configuration.rules.forEach((rule,i) => content += "<tr><td><input type='checkbox'/></td><td>" + rule.name + "</td><td>" + rule.duration + "</td></tr>");
         $("#tblConfiguration").html(content);
         $("#txtDailyDuration").val(ctMain.configuration.dailyDuration);
+    },
+    loadHistoPage: () => {
+        if (ctMain.history && ctMain.history.listItems.length>0) {
+            let content = $("#tblHistory").html();
+            ctMain.history.listItems.forEach((item,i) => content += "<tr><td>" + item.date + "</td><td>" + item.duration + " mn</td></tr>");
+            $("#tblHistory").html(content);
+        }
     }
 }
 
@@ -233,8 +272,9 @@ const ctMain = {
     initialize : () => {
         // load configuration
         ctMain.configuration.load().done(() => {
-            // Init context
+            // Init context & history
             ctMain.context = new CTContext(ctMain.configuration);
+            ctMain.history = new CTHistory();
             
             // Init view
             ctViewManager.initialize().done(() => {
