@@ -70,6 +70,9 @@ class CTContext {
     lock() {
         this.locked = true;
     }
+    unlock() {
+        this.locked = false;
+    }
     addRule(rule) {
         this.rules.push(rule);
     }
@@ -116,16 +119,24 @@ class CTContext {
 * CTTemplate : template manipulation
 */
 class CTTemplate {
-    constructor() {}
-    loadTemplate(name, dest) {
+    constructor(name, dest) {
+        this.name = name;
+        this.dest = dest;
+    }
+    load() {
         let res = $.Deferred();
-        $.get("./component/" + name + ".html")
+        $.get("./component/" + this.name + "/" + this.name + ".html")
             .done((data) => {
-              $("#" + dest).html(data);
-              res.resolve();
+                // set html content
+                $("#" + this.dest).html(data);
+                // Add js script 
+                var new_script = document.createElement('script');
+                new_script.setAttribute('src',"./component/" + this.name + "/" + this.name + ".js");
+                document.head.appendChild(new_script);              
+                res.resolve();
             })
             .fail(() => {
-                console.log('template error : ' + name)
+                console.log('template error : ' + this.name)
                 res.reject();
             });
         return res.promise();
@@ -151,22 +162,28 @@ class CTHistory {
         this.listItems.push(item);
     }
     save() {
-        window.localStorage['CTHistory'] = JSON.stringify(this.listItems);
+        if (window.localStorage)
+            window.localStorage['CTHistory'] = JSON.stringify(this.listItems);
+    }
+    clear() {
+        this.listItems = [];
+        if (window.localStorage && window.localStorage['CTHistory'])
+            window.localStorage.removeItem('CTHistory');
     }
 }
 
 /*
-* View manager
+* ctTemplatesManager : Templates manager
 */
-const ctViewManager = {
-    initialize : () => {
+class CTTemplatesManager {
+    constructor(templates) {
+        this.templates = templates;
+    }
+    build() {
         let res = $.Deferred();       
         // Init templates
-        let t1 = new CTTemplate().loadTemplate('menu', 'divMenu');
-        let t2 = new CTTemplate().loadTemplate('home', 'divContent');
-        let t3 = new CTTemplate().loadTemplate('config', 'divConfiguration');
-        let t4 = new CTTemplate().loadTemplate('histo', 'divHistory');
-        $.when(t1,t2,t3,t4)
+        let defs = this.templates.map((t) => t.load());
+        $.when(defs)
             .done(() => {
                 res.resolve();
             })
@@ -174,93 +191,7 @@ const ctViewManager = {
                 res.reject();
             }); 
         return res.promise();
-    },
-    clickMenu: (idMenu) => {
-        $("div.content").removeClass('visible').addClass('hidden');
-        if (idMenu=='home') $("#divContent").addClass('visible').removeClass('hidden');
-        if (idMenu=='config') $("#divConfiguration").addClass('visible').removeClass('hidden');
-        if (idMenu=='histo') $("#divHistory").addClass('visible').removeClass('hidden');
-    },
-    clickAddRuleHistory: () => {
-        let ruleId = $("#selListRules").val();
-        if (ruleId!='-') {
-            ctMain.context.applyRule(ruleId*1);
-            ctMain.context.saveContext();
-            ctMain.initialize();
-        }
-    },
-    clickTerminateContext: () => {
-        let result = confirm('Confirmer la fin de la session ?');
-        if (result==true) {
-            ctMain.history.addItem(ctMain.context);
-            ctMain.history.save();
-            ctMain.context.lock();
-            ctMain.context.saveContext();
-            ctMain.initialize();
-        }
-    },
-    clickReset: () => {
-        let result = confirm('Confirmer la reinitialisation ?');
-        if (result==true) {
-            window.localStorage.removeItem('CTContext');
-            ctMain.initialize();   
-        }
-    },
-    initEvents: () => {
-        // menu
-        $("#tdMenuHome").click(() => ctViewManager.clickMenu('home'));
-        $("#tdMenuConfig").click(() => ctViewManager.clickMenu('config'));
-        $("#tdMenuHisto").click(() => ctViewManager.clickMenu('histo'));
-
-        // btn
-        $("#btnAddRuleHisto").click(() => ctViewManager.clickAddRuleHistory());
-        $("#btnTerminate").click(() => ctViewManager.clickTerminateContext());
-        $("#btnReset").click(() => ctViewManager.clickReset());
-    },
-    initPage: () => {
-        // init home page
-        ctViewManager.loadHomePage();
-        ctViewManager.loadConfigurationPage();
-        ctViewManager.loadHistoPage();
-    },
-    loadHomePage: () => {
-        let content = "";
-        
-        // get title
-        content = $("#pTitleMain").html();
-        content = content.replace("[CONTENT]", ctMain.context.getTotalDuration() + " mn");
-        $("#pTitleMain").html(content);
-
-        // build history
-        content = $("#pRulesHisto table").html();
-        ctMain.context.history.forEach((histo,i) => content += "<tr><td>" + histo.name + "</td><td>" + histo.duration + "</td></tr>");
-        $("#pRulesHisto table").html(content);
-
-        // fill select rules
-        content = $("#selListRules").html();
-        ctMain.context.rules.forEach((rule,i) => content += "<option value='" + rule.id + "'>" + rule.name + " (" + rule.duration +  "mn)</option>");
-        $("#selListRules").html(content);
-
-        if (ctMain.context.locked) {
-            $("#btnAddRuleHisto").prop('disabled',true);
-            $("#btnTerminate").prop('disabled',true);
-            $("#selListRules").prop('disabled',true);
-        }
-    },
-    loadConfigurationPage: () => {
-        let content = "";
-        content += "<tr><td></td><td>Nom</td><td>Valeur</td></tr>";
-        ctMain.configuration.rules.forEach((rule,i) => content += "<tr><td><input type='checkbox'/></td><td>" + rule.name + "</td><td>" + rule.duration + "</td></tr>");
-        $("#tblConfiguration").html(content);
-        $("#txtDailyDuration").val(ctMain.configuration.dailyDuration);
-    },
-    loadHistoPage: () => {
-        if (ctMain.history && ctMain.history.listItems.length>0) {
-            let content = $("#tblHistory").html();
-            ctMain.history.listItems.forEach((item,i) => content += "<tr><td>" + item.date + "</td><td>" + item.duration + " mn</td></tr>");
-            $("#tblHistory").html(content);
-        }
-    }
+    };
 }
 
 /*
@@ -276,12 +207,13 @@ const ctMain = {
             ctMain.context = new CTContext(ctMain.configuration);
             ctMain.history = new CTHistory();
             
-            // Init view
-            ctViewManager.initialize().done(() => {
-                // init events
-                ctViewManager.initEvents();
-                // init view
-                ctViewManager.initPage();
+            // Init templates & build
+            let templates = [];
+            templates.push(new CTTemplate('menu', 'divMenu'));
+            templates.push(new CTTemplate('home', 'divContent'));
+            templates.push(new CTTemplate('config', 'divConfiguration'));
+            templates.push(new CTTemplate('histo', 'divHistory'));
+            new CTTemplatesManager(templates).build().done(() => {
             }); 
         });
     }
