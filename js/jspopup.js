@@ -67,7 +67,8 @@ const JSPopup = {
 			'text-align': 'center',
 			'font-size': 'small',
 			'font-weight': 'bolder',
-			'font-family': 'sans-serif'
+			'font-family': 'sans-serif',
+			'padding-top': '5px'
 		};
 		$("#divPopupHeader").css(cssHeader);
 		// footer
@@ -75,7 +76,7 @@ const JSPopup = {
 			'position':'relative',
 			'width':'100%',
 			'height':'20px',
-			'top': (height - 84),
+			'top': (height - 90),
 			'left':'0',
 			'border':'none',
 			'text-align': 'center'
@@ -83,7 +84,7 @@ const JSPopup = {
 		$("#divPopupFooter").css(cssFooter);	
 		// Content
 		var cssContent = {
-			'width':'100%',
+			'width':'95%',
 			'height':'20px',
 			'text-align': 'left',
 			'margin':'8px'
@@ -168,19 +169,19 @@ const JSPopup = {
 		if (buttons==JSPopup.PopupType.OK_CANCEL) {
 			sHtmlButtons += "<button class='btnPopup' id='btnOK'>OK</button>";
 			sHtmlButtons += "&nbsp;";
-			sHtmlButtons += "<button class='btnPopup' id='btnCancel'>Cancel</button>";
+			sHtmlButtons += "<button class='btnPopup' id='btnCancel'>Annuler</button>";
 		}
 		if (buttons==JSPopup.PopupType.YES_NO) {
-			sHtmlButtons += "<button class='btnPopup' id='btnYes'>Yes</button>";
+			sHtmlButtons += "<button class='btnPopup' id='btnYes'>Oui</button>";
 			sHtmlButtons += "&nbsp;";
-			sHtmlButtons += "<button class='btnPopup' id='btnNo'>No</button>";
+			sHtmlButtons += "<button class='btnPopup' id='btnNo'>Non</button>";
 		}
 		if (buttons==JSPopup.PopupType.YES_NO_CANCEL) {
-			sHtmlButtons += "<button class='btnPopup' id='btnYes'>Yes</button>";
+			sHtmlButtons += "<button class='btnPopup' id='btnYes'>Oui</button>";
 			sHtmlButtons += "&nbsp;";
-			sHtmlButtons += "<button class='btnPopup' id='btnNo'>No</button>";
+			sHtmlButtons += "<button class='btnPopup' id='btnNo'>Non</button>";
 			sHtmlButtons += "&nbsp;";
-			sHtmlButtons += "<button class='btnPopup' id='btnCancel'>Cancel</button>";
+			sHtmlButtons += "<button class='btnPopup' id='btnCancel'>Annuler</button>";
 		}
 		return sHtmlButtons;
 	},

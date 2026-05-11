@@ -42,23 +42,40 @@ const ctHome = {
         }
     },
     clickTerminateContext: () => {
-        let result = confirm('Confirmer la fin de la session ?');
-        if (result==true) {
-            ctMain.history.addItem(ctMain.context);
-            ctMain.history.save();
-            ctHisto.initContent(); // reload histo content
-            ctMain.context.lock();
-            ctMain.context.saveContext();
-            ctHome.initContent();
-        }
+        let settings = {
+            'title' : "Fin de la session",
+            'message' : "Confirmez-vous la fin de la session en cours ?<br/><br/><small>Cela validera la duree journaliere ainsi que les ajustements effectues et ajoutera une entree dans l'historique.</small>",
+            'type' : JSPopup.PopupType.YES_NO,
+            'modal' : true,
+            'handler' : (res) => { 
+                if (res==2) {
+                    ctMain.history.addItem(ctMain.context);
+                    ctMain.history.save();
+                    ctHisto.initContent(); // reload histo content
+                    ctMain.context.lock();
+                    ctMain.context.saveContext();
+                    ctHome.initContent();
+                }
+            }
+        };
+        JSPopup.ShowPopup(settings);
     },
     clickReset: () => {
-        let result = confirm('Confirmer la reinitialisation ?');
-        if (result==true) {
-            window.localStorage.removeItem('CTContext');
-            ctMain.context = new CTContext(ctMain.configuration);
-            ctHome.initContent();   
-        }
+
+        let settings = {
+            'title' : "Reinitialisation de la session",
+            'message' : "Reinitialisation de la session courante ?<br/><br/><small>Toute modification non validee sera perdue.</small>",
+            'type' : JSPopup.PopupType.YES_NO,
+            'modal' : true,
+            'handler' : (res) => { 
+                if (res==2) {
+                    window.localStorage.removeItem('CTContext');
+                    ctMain.context = new CTContext(ctMain.configuration);
+                    ctHome.initContent();
+                }
+            }
+        };
+        JSPopup.ShowPopup(settings);
     },
 }
 
