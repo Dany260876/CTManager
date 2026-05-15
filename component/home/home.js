@@ -20,6 +20,11 @@ const ctHome = {
             ctMain.context.history.forEach((histo,i) => {
                 let rowClass = 'odd';
                 if (i%2==0) rowClass = 'even';
+                if (histo.duration>0) 
+                    rowClass += ' positiveValue'; 
+                else
+                    rowClass += ' negativeValue'; 
+                
                 content += "<tr class='" + rowClass + "'><td>" + histo.name + "</td><td>" + histo.duration + "</td></tr>";
             });
         else 
