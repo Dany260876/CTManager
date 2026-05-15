@@ -3,9 +3,10 @@ const ctHome = {
         // Load page
         ctHome.initContent();
         // btn click
-        $("#btnAddRuleHisto").click(() => ctHome.clickAddRuleHistory());
         $("#btnTerminate").click(() => ctHome.clickTerminateContext());
         $("#btnReset").click(() => ctHome.clickReset());
+        $("#selListRules").change(() => ctHome.clickAddRuleHistory());
+        $("#btnCancel").click(() => ctHome.clickCancelInput());
     },
     initContent: () => {
         let content = "";
@@ -24,11 +25,11 @@ const ctHome = {
         $("#selListRules").html(content);
 
         // Disable/enable content
-        $("#btnAddRuleHisto").prop('disabled',false);
+        $("#btnCancel").prop('disabled',false);
         $("#btnTerminate").prop('disabled',false);
         $("#selListRules").prop('disabled',false);
         if (ctMain.context.locked) {
-            $("#btnAddRuleHisto").prop('disabled',true);
+            $("#btnCancel").prop('disabled',true);
             $("#btnTerminate").prop('disabled',true);
             $("#selListRules").prop('disabled',true);
         }
@@ -61,7 +62,6 @@ const ctHome = {
         JSPopup.ShowPopup(settings);
     },
     clickReset: () => {
-
         let settings = {
             'title' : "Reinitialisation de la session",
             'message' : "Reinitialisation de la session courante ?<br/><br/><small>Toute modification non validee sera perdue.</small>",
@@ -77,6 +77,12 @@ const ctHome = {
         };
         JSPopup.ShowPopup(settings);
     },
+    clickCancelInput : () => {
+        if (ctMain.context.removeLastRule()) {
+            ctMain.context.saveContext();
+            ctHome.initContent();   
+        }
+    }
 }
 
 ctHome.initialize();
