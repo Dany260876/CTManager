@@ -12,20 +12,24 @@ const ctHome = {
         let content = "";
         
         // get title
-        $("#pTitleMain").html("Temps restant : " + ctMain.context.getTotalDuration() + " mn");
+        $("#pTitleMain").html("&#128337; Temps restant : " + ctMain.context.getTotalDuration() + " mn");
 
         // build history
-        content = "<tr class='header'><td>Nom</td><td>Dur&eacute;e (mn)</td></tr>";
+        content = "<tr class='header'><td>Nom</td><td>Dur&eacute;e (mn)</td><td></td></tr>";
         if (ctMain.context.history.length>0)
             ctMain.context.history.forEach((histo,i) => {
-                let rowClass = 'odd';
+                let rowClass = 'odd', emo = "";
                 if (i%2==0) rowClass = 'even';
-                if (histo.duration>0) 
+                if (histo.duration>0) {
                     rowClass += ' positiveValue'; 
-                else
+                    emo = "&#128522;"
+                }
+                else {
                     rowClass += ' negativeValue'; 
+                    emo = "&#128543;"
+                }
                 
-                content += "<tr class='" + rowClass + "'><td>" + histo.name + "</td><td>" + histo.duration + "</td></tr>";
+                content += "<tr class='" + rowClass + "'><td>" + histo.name + "</td><td>" + histo.duration + "</td><td>" + emo + "</td></tr>";
             });
         else 
             content += "<tr><td>Aucun</td><td>-</td></tr>"
