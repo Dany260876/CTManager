@@ -116,8 +116,12 @@ td, th {
     border-bottom: 1px solid #eee;
 }
 
-tr.odd {
-    background-color: #e5e7eb;
+tr.negativeValue {
+    color: red;
+}
+
+tr.positiveValue {
+    color: green;
 }
 
 /* Formulaires */
@@ -181,7 +185,7 @@ div.visible {
 }
 
 tr.header {
-    color: #4c4c4c;
+    color: #595959;
     font-weight: bold;
 }
 

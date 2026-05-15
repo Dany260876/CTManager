@@ -99,7 +99,7 @@ const JSPopup = {
 				'height':'100%',
 				'left':'0',
 				'top':'0',
-				'background-color': 'rgb(82 102 158)',
+				'background-color': 'rgb(76 76 76)',
 				'opacity': '0.5',
 				'filter': 'alpha(opacity=30)'
 			};
