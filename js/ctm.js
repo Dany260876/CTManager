@@ -76,6 +76,13 @@ class CTContext {
     addRule(rule) {
         this.rules.push(rule);
     }
+    removeLastRule() {
+        if (this.history.length>0) {
+            this.history = this.history.slice(0, this.history.length - 1);
+            return true;
+        }
+        return false;
+    }
     applyRule(id) {
         // Change timestamp & add rule to history
         this.timestamp = new Date();
@@ -156,7 +163,7 @@ class CTHistory {
     }
     addItem(context) {
         let item = {};
-        item.date = new Date().toDateString();
+        item.date = new Date().toLocaleDateString("fr-FR", { dateStyle:'full'});
         item.duration = context.getTotalDuration();
         item.history = context.history;
         this.listItems.push(item);
