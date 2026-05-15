@@ -1,6 +1,17 @@
 const ctMenu = {
     initialize : () => {
-        // menu
+
+        // Toggle menu
+        $("#btnHamburger").on("click", function() {
+            $("#menuItemsList").toggleClass("show");
+        });
+    
+        // Close menu
+        $(".menuItem").on("click", function() {
+            $("#menuItemsList").removeClass("show");
+        });
+        
+        // Menu events
         $("#tdMenuHome").click(() => ctMenu.clickMenu('home'));
         $("#tdMenuConfig").click(() => ctMenu.clickMenu('config'));
         $("#tdMenuHisto").click(() => ctMenu.clickMenu('histo'));
