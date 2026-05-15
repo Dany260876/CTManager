@@ -198,7 +198,7 @@ const JSPopup = {
 		{				
 			var sHtml = "";
 			if (objParam.modal==true) sHtml += "  <div id='divModalForm'></div>";
-			sHtml += "<div id='divPopup'>";
+			sHtml += "<div id='divPopup' class='popup-card'>";
 			sHtml += "  <div id='divPopupHeader'>" + objParam.title + "</div>";
 			sHtml += "  <div id='divPopupContent'>" + objParam.message + "</div>";
 			sHtml += "  <div id='divPopupFooter'>" + JSPopup.BuildFooterButtons(objParam.type) + "</div>";
