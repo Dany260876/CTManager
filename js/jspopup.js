@@ -99,8 +99,8 @@ const JSPopup = {
 				'height':'100%',
 				'left':'0',
 				'top':'0',
-				'background-color': '#000000',
-				'opacity': '0.2',
+				'background-color': 'rgb(82 102 158)',
+				'opacity': '0.5',
 				'filter': 'alpha(opacity=30)'
 			};
 			$("#divModalForm").css(cssModal);

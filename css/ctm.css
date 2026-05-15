@@ -1,11 +1,11 @@
 /* Variables de couleurs - Facile à modifier */
 :root {
-    --primary-color: #2563eb;
+    --primary-color: #507ddf;
     --bg-color: #f3f4f6;
     --card-bg: #ffffff;
     --text-color: #1f2937;
-    --danger: #ef4444;
-    --success: #10b981;
+    --danger: #f39090;
+    --success: #54d2a9;
 }
 
 body {
@@ -112,8 +112,12 @@ table {
 }
 
 td, th {
-    padding: 12px;
+    padding: 6px;
     border-bottom: 1px solid #eee;
+}
+
+tr.odd {
+    background-color: #e5e7eb;
 }
 
 /* Formulaires */
@@ -127,6 +131,15 @@ input[type="text"], select {
 }
 
 /* Boutons */
+#btnYes {
+    background-color : ##e5e7eb;
+    color: green;
+}
+#btnNo {
+    background-color : ##e5e7eb;
+    color: red;
+}
+
 button {
     width: 100%; /* Largeur totale sur mobile */
     padding: 14px;
@@ -165,6 +178,11 @@ div.hidden {
 
 div.visible {
     display: block;
+}
+
+tr.header {
+    color: #4c4c4c;
+    font-weight: bold;
 }
 
 button:disabled, 

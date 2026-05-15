@@ -15,8 +15,16 @@ const ctHome = {
         $("#pTitleMain").html("Temps restant : " + ctMain.context.getTotalDuration() + " mn");
 
         // build history
-        content = "<tr><td>Nom</td><td>Dur&eacute;e (mn)</td></tr>";
-        ctMain.context.history.forEach((histo,i) => content += "<tr><td>" + histo.name + "</td><td>" + histo.duration + "</td></tr>");
+        content = "<tr class='header'><td>Nom</td><td>Dur&eacute;e (mn)</td></tr>";
+        if (ctMain.context.history.length>0)
+            ctMain.context.history.forEach((histo,i) => {
+                let rowClass = 'odd';
+                if (i%2==0) rowClass = 'even';
+                content += "<tr class='" + rowClass + "'><td>" + histo.name + "</td><td>" + histo.duration + "</td></tr>";
+            });
+        else 
+            content += "<tr><td>Aucun</td><td>-</td></tr>"
+        
         $("#pRulesHisto table").html(content);
 
         // fill select rules
