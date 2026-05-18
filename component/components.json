@@ -1,0 +1,6 @@
+[
+    { "name":"config", "container" : "divConfiguration" },
+    { "name":"histo" , "container" : "divHistory" },
+    { "name":"home" , "container" : "divContent" },
+    { "name":"menu" , "container" : "divMenu" }
+]
