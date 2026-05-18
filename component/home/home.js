@@ -12,7 +12,7 @@ const ctHome = {
         let content = "";
         
         // get title
-        $("#pTitleMain").html("&#128337; Temps restant : " + ctMain.context.getTotalDuration() + " mn");
+        $("#pTitleMain").html("Temps disponible : " + ctMain.context.getTotalDuration() + " mn");
 
         // build history
         content = "<tr class='header'><td>Nom</td><td>Dur&eacute;e (mn)</td><td></td></tr>";

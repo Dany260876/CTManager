@@ -94,10 +94,11 @@ body {
 
 /* --- STYLES DES COMPOSANTS --- */
 h1, p#pTitleMain {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: bold;
     color: var(--primary-color);
     margin-bottom: 20px;
+    text-align: center;
 }
 
 /* Tables style */

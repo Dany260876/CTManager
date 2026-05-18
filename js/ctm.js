@@ -136,10 +136,12 @@ class CTTemplate {
             .done((data) => {
                 // set html content
                 $("#" + this.dest).html(data);
+               
                 // Add js script 
                 var new_script = document.createElement('script');
                 new_script.setAttribute('src',"./component/" + this.name + "/" + this.name + ".js");
-                document.head.appendChild(new_script);              
+                document.head.appendChild(new_script);
+                
                 res.resolve();
             })
             .fail(() => {
@@ -180,23 +182,43 @@ class CTHistory {
 }
 
 /*
-* ctTemplatesManager : Templates manager
+* CTComponentManager : Components manager
 */
-class CTTemplatesManager {
-    constructor(templates) {
-        this.templates = templates;
-    }
+class CTComponentManager {
+    constructor() {}
     build() {
-        let res = $.Deferred();       
-        // Init templates
-        let defs = this.templates.map((t) => t.load());
-        $.when(defs)
-            .done(() => {
-                res.resolve();
-            })
-            .fail(() => {
-                res.reject();
-            }); 
+        let res = $.Deferred();
+
+        // get component config
+        $.get("./component/components.json")
+         .done((data) => {
+            let components = {};
+
+            // convert json if needed
+            if (data[0].name)
+                components = data;
+            else
+                components = JSON.parse(data);
+            
+            // build templates list 
+            let templates = [];
+            components.forEach((c) => {
+                templates.push(new CTTemplate(c.name, c.container));    
+            });
+                                     
+            // Init templates
+            let defs = templates.map((t) => t.load());
+            $.when(defs)
+                .done(() => {
+                    res.resolve();
+                })
+                .fail(() => {
+                    res.reject();
+                });  
+         })
+         .fail(() => {
+             res.reject();
+         });
         return res.promise();
     };
 }
@@ -214,13 +236,8 @@ const ctMain = {
             ctMain.context = new CTContext(ctMain.configuration);
             ctMain.history = new CTHistory();
             
-            // Init templates & build
-            let templates = [];
-            templates.push(new CTTemplate('menu', 'divMenu'));
-            templates.push(new CTTemplate('home', 'divContent'));
-            templates.push(new CTTemplate('config', 'divConfiguration'));
-            templates.push(new CTTemplate('histo', 'divHistory'));
-            new CTTemplatesManager(templates).build().done(() => {
+            // Init components & build
+            new CTComponentManager().build().done(() => {
             }); 
         });
     }
