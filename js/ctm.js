@@ -76,6 +76,10 @@ class CTContext {
     addRule(rule) {
         this.rules.push(rule);
     }
+    removeRule(id) {
+        let index = this.rules.findIndex((r) => r.id==id);
+        this.rules.splice(index,1);
+    }
     removeLastRule() {
         if (this.history.length>0) {
             this.history = this.history.slice(0, this.history.length - 1);
@@ -123,36 +127,6 @@ class CTContext {
 }
 
 /*
-* CTTemplate : template manipulation
-*/
-class CTTemplate {
-    constructor(name, dest) {
-        this.name = name;
-        this.dest = dest;
-    }
-    load() {
-        let res = $.Deferred();
-        $.get("./component/" + this.name + "/" + this.name + ".html")
-            .done((data) => {
-                // set html content
-                $("#" + this.dest).html(data);
-               
-                // Add js script 
-                var new_script = document.createElement('script');
-                new_script.setAttribute('src',"./component/" + this.name + "/" + this.name + ".js");
-                document.head.appendChild(new_script);
-                
-                res.resolve();
-            })
-            .fail(() => {
-                console.log('template error : ' + this.name)
-                res.reject();
-            });
-        return res.promise();
-    }
-}
-
-/*
 * CTHistory : ct context history management
 */
 class CTHistory {
@@ -182,6 +156,36 @@ class CTHistory {
 }
 
 /*
+* CTComponent : component (js+html+css)
+*/
+class CTComponent {
+    constructor(name, dest) {
+        this.name = name;
+        this.dest = dest;
+    }
+    load() {
+        let res = $.Deferred();
+        $.get("./component/" + this.name + "/" + this.name + ".html")
+            .done((data) => {
+                // set html content
+                $("#" + this.dest).html(data);
+               
+                // Add js script 
+                var new_script = document.createElement('script');
+                new_script.setAttribute('src',"./component/" + this.name + "/" + this.name + ".js");
+                document.head.appendChild(new_script);
+                
+                res.resolve();
+            })
+            .fail(() => {
+                console.log('template error : ' + this.name)
+                res.reject();
+            });
+        return res.promise();
+    }
+}
+
+/*
 * CTComponentManager : Components manager
 */
 class CTComponentManager {
@@ -192,22 +196,22 @@ class CTComponentManager {
         // get component config
         $.get("./component/components.json")
          .done((data) => {
-            let components = {};
+            let configComponents = {};
 
             // convert json if needed
             if (data[0].name)
-                components = data;
+                configComponents = data;
             else
-                components = JSON.parse(data);
+                configComponents = JSON.parse(data);
             
-            // build templates list 
-            let templates = [];
-            components.forEach((c) => {
-                templates.push(new CTTemplate(c.name, c.container));    
+            // build components list 
+            let components = [];
+            configComponents.forEach((c) => {
+                components.push(new CTComponent(c.name, c.container));    
             });
-                                     
-            // Init templates
-            let defs = templates.map((t) => t.load());
+
+            // Load components
+            let defs = components.map((t) => t.load());
             $.when(defs)
                 .done(() => {
                     res.resolve();
@@ -227,13 +231,13 @@ class CTComponentManager {
 * Main CTM object
 */
 const ctMain = {
-    configuration : new CTConfiguration, 
     context : {},
     initialize : () => {
         // load configuration
-        ctMain.configuration.load().done(() => {
+        let config = new CTConfiguration();
+        config.load().done(() => {
             // Init context & history
-            ctMain.context = new CTContext(ctMain.configuration);
+            ctMain.context = new CTContext(config);
             ctMain.history = new CTHistory();
             
             // Init components & build

@@ -36,10 +36,8 @@ const ctHome = {
         
         $("#pRulesHisto table").html(content);
 
-        // fill select rules
-        content = "<option value='-'>-</option>";
-        ctMain.context.rules.forEach((rule,i) => content += "<option value='" + rule.id + "'>" + rule.name + " (" + rule.duration +  "mn)</option>");
-        $("#selListRules").html(content);
+        // Fill select rules
+        ctHome.initRulesList();
 
         // Disable/enable content
         $("#btnCancel").prop('disabled',false);
@@ -50,6 +48,12 @@ const ctHome = {
             $("#btnTerminate").prop('disabled',true);
             $("#selListRules").prop('disabled',true);
         }
+    },
+    initRulesList: () => {
+        // fill select rules
+        content = "<option value='-'>-</option>";
+        ctMain.context.rules.forEach((rule,i) => content += "<option value='" + rule.id + "'>" + rule.name + " (" + rule.duration +  "mn)</option>");
+        $("#selListRules").html(content);
     },
     clickAddRuleHistory: () => {
         let ruleId = $("#selListRules").val();
