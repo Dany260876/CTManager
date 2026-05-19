@@ -1,15 +1,22 @@
 <div>
     <p>&#128296; Configuration</p>
     <p>
-    Durée journalière (minutes) : <input type='text' id='txtDailyDuration'></input>
+        <table>
+            <tr>
+                <td>
+                    Durée (mn)
+                </td>
+                <td>
+                    <input type='number' id='txtDailyDuration'></input>
+                </td>
+                <td>
+                    <button id='btnDurationOk'>&#128221;</button>
+                </td>
+            </tr>
+        </table>
     </p>
     <p>
         Liste de règles :
         <table id='tblConfiguration'></table>
-        <button id='btnAddNewRule'>Ajouter</button>
-        <button id='btnRemoveRule'>Supprimer</button>
-    </p>
-    <p>
-        <button id='btnValidateConfig'>Modifier configuration</button>
     </p>
 </div>
