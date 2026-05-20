@@ -2,6 +2,7 @@ const ctHome = {
     initialize : () => {
         // Load page
         ctHome.initContent();
+        
         // btn click
         $("#btnTerminate").click(() => ctHome.clickTerminateContext());
         $("#btnReset").click(() => ctHome.clickReset());
@@ -11,30 +12,11 @@ const ctHome = {
     initContent: () => {
         let content = "";
         
-        // get title
-        $("#pTitleMain").html("Temps disponible : " + ctMain.context.getTotalDuration() + " mn");
+        // init title
+        ctHome.initTitle();
 
-        // build history
-        content = "<tr class='header'><td>Nom</td><td>Dur&eacute;e (mn)</td><td></td></tr>";
-        if (ctMain.context.history.length>0)
-            ctMain.context.history.forEach((histo,i) => {
-                let rowClass = 'odd', emo = "";
-                if (i%2==0) rowClass = 'even';
-                if (histo.duration>0) {
-                    rowClass += ' positiveValue'; 
-                    emo = "&#128522;"
-                }
-                else {
-                    rowClass += ' negativeValue'; 
-                    emo = "&#128543;"
-                }
-                
-                content += "<tr class='" + rowClass + "'><td>" + histo.name + "</td><td>" + histo.duration + "</td><td>" + emo + "</td></tr>";
-            });
-        else 
-            content += "<tr><td>Aucun</td><td>-</td></tr>"
-        
-        $("#pRulesHisto table").html(content);
+        // Init history
+        ctHome.initRulesHistory();
 
         // Fill select rules
         ctHome.initRulesList();
@@ -48,6 +30,32 @@ const ctHome = {
             $("#btnTerminate").prop('disabled',true);
             $("#selListRules").prop('disabled',true);
         }
+    },
+    initTitle:() => {
+         $("#pTitleMain").html("Temps disponible : " + ctMain.context.getTotalDuration() + " mn");
+    },
+    initRulesHistory: () => {
+        // build history
+        content = "<tr class='header'><td>Heure</td><td>Nom</td><td>Dur&eacute;e (mn)</td><td></td></tr>";
+        if (ctMain.context.history.length>0)
+            ctMain.context.history.forEach((histo,i) => {
+                let rowClass = 'odd', emo = "";
+                if (i%2==0) rowClass = 'even';
+                if (histo.duration>0) {
+                    rowClass += ' positiveValue'; 
+                    emo = "&#128522;"
+                }
+                else {
+                    rowClass += ' negativeValue'; 
+                    emo = "&#128543;"
+                }
+                
+                content += "<tr class='" + rowClass + "'><td>" + histo.time + "</td><td>" + histo.name + "</td><td>" + histo.duration + "</td><td>" + emo + "</td></tr>";
+            });
+        else 
+            content += "<tr><td>Aucun</td><td>-</td></tr>"
+        
+        $("#pRulesHisto table").html(content);
     },
     initRulesList: () => {
         // fill select rules
@@ -90,8 +98,9 @@ const ctHome = {
             'modal' : true,
             'handler' : (res) => { 
                 if (res==2) {
-                    window.localStorage.removeItem('CTContext');
-                    ctMain.context = new CTContext(ctMain.configuration);
+                    ctMain.context.resetHistory();
+                    ctMain.context.unlock();
+                    ctMain.context.saveContext();
                     ctHome.initContent();
                 }
             }
