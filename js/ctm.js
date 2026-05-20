@@ -73,6 +73,9 @@ class CTContext {
     unlock() {
         this.locked = false;
     }
+    resetHistory() {
+        this.history = [];
+    }
     addRule(rule) {
         this.rules.push(rule);
     }
@@ -92,7 +95,9 @@ class CTContext {
         this.timestamp = new Date();
         let rule = this.rules.filter((r,i) => { if (r.id==id) return r })
         if (rule.length>0) {
-            this.history.push(rule[0]);
+            let newRule = rule[0];
+            newRule.time = new Date().toLocaleTimeString();
+            this.history.push(newRule);
             return true;
         }
         return false;

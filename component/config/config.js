@@ -11,7 +11,7 @@ const ctConfig = {
             if (i%2==0) rowClass = 'even';
             content += "<tr class='" + rowClass + "'><td>" + rule.name + "</td><td>" + rule.duration + "</td><td><button onclick='ctConfig.clickRemoveItem(" + rule.id + ")'>&#10060;</button></td></tr>";
         });
-        content += "<tr><td><input type='text' id='txtItemName'></input></td><td><input type='number' id='txtItemDuration'></input></td><td><button onclick='ctConfig.clickAddItem()'>&#128221;</button></td></tr>";
+        content += "<tr><td><input type='text' id='txtItemName' maxlength='20'></input></td><td><input type='number' id='txtItemDuration'></input></td><td><button onclick='ctConfig.clickAddItem()'>&#128221;</button></td></tr>";
         $("#tblConfiguration").html(content);
         $("#txtDailyDuration").val(ctMain.context.duration);
     },
