@@ -103,22 +103,27 @@ class CTContext {
         return false;
     }
     saveContext() {
-        if (window.localStorage) {
-            window.localStorage["CTContext"] = JSON.stringify(this);
+        localforage.setItem('CTContext', this).then((value) => {
             return true;
-        }
+        });
         return false;
     }
     loadContext() {
-        if (window.localStorage && window.localStorage["CTContext"]) {
-            let objContext = JSON.parse(window.localStorage["CTContext"]);
-            this.history = objContext.history;
-            this.timestamp = objContext.timestamp;
-            this.rules = objContext.rules;
-            this.duration = objContext.duration;
-            this.locked = objContext.locked;
-            return true;
-        }
+        var me = this;
+        localforage.getItem('CTContext').then(function(objContext) {
+            if (objContext!=null) {
+                me.history = objContext.history;
+                me.timestamp = objContext.timestamp;
+                me.rules = objContext.rules;
+                me.duration = objContext.duration;
+                me.locked = objContext.locked;
+                return true;   
+            }
+            return false;
+        }).catch(function(err) {
+            console.log(err);
+            return false;
+        });
         return false;
     }
     getTotalDuration() {
@@ -136,11 +141,13 @@ class CTContext {
 */
 class CTHistory {
     constructor() {
-        this.listItems = [];
-        if (window.localStorage && window.localStorage['CTHistory']) {
-            let items = JSON.parse(window.localStorage['CTHistory']);
-            this.listItems = items;
-        }
+        var me = this;
+        me.listItems = [];
+        localforage.getItem('CTHistory').then((items) => {
+            if (items!=null) me.listItems = items;
+        }).catch(function(err) {
+            console.log(err);
+        });
     }
     addItem(context) {
         let item = {};
@@ -150,13 +157,15 @@ class CTHistory {
         this.listItems.push(item);
     }
     save() {
-        if (window.localStorage)
-            window.localStorage['CTHistory'] = JSON.stringify(this.listItems);
+        localforage.setItem('CTHistory', this.listItems).catch(function(err) {
+            console.log(err);
+        });
     }
     clear() {
         this.listItems = [];
-        if (window.localStorage && window.localStorage['CTHistory'])
-            window.localStorage.removeItem('CTHistory');
+        localforage.removeItem('CTHistory').catch(function(err) {
+            console.log(err);
+        });
     }
 }
 
