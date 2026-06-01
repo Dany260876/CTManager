@@ -41,31 +41,13 @@ class CTConfiguration {
 * CTContext : current CT Context
 */
 class CTContext {
-    constructor(configuration) {
-        let isLoaded = false;
-        
+    constructor() {
         // Default values
         this.history = [];
         this.timestamp = new Date();
         this.duration = 60;
         this.rules = [];   
         this.locked = false;
-        
-        // load current context, check if expired
-        if (this.loadContext()) {
-            isLoaded = !this.hasExpired();
-        }
-
-        // if not loaded, try to load from config 
-        if (!isLoaded) {
-            if (configuration) {
-                this.duration = configuration.dailyDuration;
-                this.rules = configuration.rules;
-                this.timestamp = new Date();
-                this.history = [];
-                this.locked = false;
-            }   
-        }
     }
     lock() {
         this.locked = true;
@@ -103,12 +85,17 @@ class CTContext {
         return false;
     }
     saveContext() {
+        let res = $.Deferred();
         localforage.setItem('CTContext', this).then((value) => {
-            return true;
+            res.resolve();
+        }).catch(function(err) {
+            console.log(err);
+            res.reject();
         });
-        return false;
+        return res;
     }
-    loadContext() {
+    loadContext(configuration) {
+        let res = $.Deferred();
         var me = this;
         localforage.getItem('CTContext').then(function(objContext) {
             if (objContext!=null) {
@@ -117,14 +104,31 @@ class CTContext {
                 me.rules = objContext.rules;
                 me.duration = objContext.duration;
                 me.locked = objContext.locked;
-                return true;   
+
+                if (me.hasExpired() && configuration) {
+                    this.duration = configuration.dailyDuration;
+                    this.rules = configuration.rules;
+                    this.timestamp = new Date();
+                    this.history = [];
+                    this.locked = false;
+                }
+                res.resolve();
             }
-            return false;
+            else {
+                if (configuration) {
+                    this.duration = configuration.dailyDuration;
+                    this.rules = configuration.rules;
+                    this.timestamp = new Date();
+                    this.history = [];
+                    this.locked = false;
+                }
+                res.resolve();
+            }
         }).catch(function(err) {
             console.log(err);
-            return false;
+            res.reject();
         });
-        return false;
+        return res;
     }
     getTotalDuration() {
         let total = this.duration;
@@ -141,13 +145,24 @@ class CTContext {
 */
 class CTHistory {
     constructor() {
+        this.listItems = [];
+    }
+    load() {
+        let res = $.Deferred();
         var me = this;
-        me.listItems = [];
         localforage.getItem('CTHistory').then((items) => {
-            if (items!=null) me.listItems = items;
+            if (items!=null) {
+                me.listItems = items;
+                res.resolve();
+            }
+            else {
+                res.resolve();
+            }
         }).catch(function(err) {
             console.log(err);
+            res.reject();
         });
+        return res;
     }
     addItem(context) {
         let item = {};
@@ -157,15 +172,29 @@ class CTHistory {
         this.listItems.push(item);
     }
     save() {
-        localforage.setItem('CTHistory', this.listItems).catch(function(err) {
-            console.log(err);
-        });
+        let res = $.Deferred();
+        localforage.setItem('CTHistory', this.listItems)
+            .then(() => {
+                res.resolve();
+            })
+            .catch((err) => {
+                res.reject();
+                console.log(err);
+            });
+        return res;
     }
     clear() {
+        let res = $.Deferred();
         this.listItems = [];
-        localforage.removeItem('CTHistory').catch(function(err) {
-            console.log(err);
-        });
+        localforage.removeItem('CTHistory')
+            .then(() => {
+                res.resolve();
+            })
+            .catch((err) => {
+                console.log(err);
+                res.reject();
+            });
+        return res;
     }
 }
 
@@ -251,12 +280,15 @@ const ctMain = {
         let config = new CTConfiguration();
         config.load().done(() => {
             // Init context & history
-            ctMain.context = new CTContext(config);
-            ctMain.history = new CTHistory();
-            
-            // Init components & build
-            new CTComponentManager().build().done(() => {
-            }); 
+            ctMain.context = new CTContext();
+            ctMain.context.loadContext(config).done(() => {
+                ctMain.history = new CTHistory();
+                ctMain.history.load().done(() => {
+                    // Init components & build
+                    new CTComponentManager().build().done(() => {
+                    });  
+                }); 
+            });
         });
     }
 }

@@ -24,8 +24,9 @@ const ctHisto = {
             'modal' : true,
             'handler' : (res) => { 
                 if (res==2) {
-                    ctMain.history.clear();
-                    ctHisto.initContent();
+                    ctMain.history.clear().done(() => {
+                        ctHisto.initContent(); 
+                    });
                 }
             }
         };

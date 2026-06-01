@@ -17,9 +17,10 @@ const ctConfig = {
     },
     clickRemoveItem: (id) => {
         ctMain.context.removeRule(id);
-        ctMain.context.saveContext();
-        ctConfig.initContent();
-        ctHome.initRulesList();
+        ctMain.context.saveContext().done(() => {
+            ctConfig.initContent();
+            ctHome.initRulesList();    
+        });
     },
     clickAddItem: () => {
         let name = $('#txtItemName').val();
@@ -27,9 +28,10 @@ const ctConfig = {
 
         if ((name!="") && (duration!=0)) {
             ctMain.context.addRule(new CTRule(name, duration));
-            ctMain.context.saveContext();
-            ctConfig.initContent();
-            ctHome.initRulesList();   
+            ctMain.context.saveContext().done(() => {
+                ctConfig.initContent();
+                ctHome.initRulesList();       
+            });
         }
     }
 }
