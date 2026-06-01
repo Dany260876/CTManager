@@ -1,5 +1,6 @@
 {
   "name": "Console Time Manager",
+  "short_name": "CT Manager",
   "start_url": "./",
   "icons": [
     {

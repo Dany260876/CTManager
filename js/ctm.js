@@ -271,6 +271,77 @@ class CTComponentManager {
 }
 
 /*
+* Password manager
+*/
+class CTPasswordManager {
+    constructor() {}
+    getCurrentPassword() {
+        let res = $.Deferred();
+        var me = this;
+        localforage.getItem('CTPassword').then((data) => {
+            if (data!=null) {
+                res.resolve(data);
+            }
+            else {
+                res.resolve('');
+            }
+        }).catch(function(err) {
+            console.log(err);
+            res.reject();
+        });
+        return res;
+    }
+    setPassword(pwd) {
+        let res = $.Deferred();
+        localforage.setItem('CTPassword', pwd)
+            .then(() => {
+                res.resolve();
+            })
+            .catch((err) => {
+                res.reject();
+                console.log(err);
+            });
+        return res;
+    }
+    needPassword() {
+        return window.sessionStorage['CTPasswordOk']==null;
+    }
+    showPopup() {
+        var me = this;
+        
+        if (!this.needPassword()) return;
+        
+        this.getCurrentPassword().done((currentPwd) => {
+            // Determine 1st password
+            JSPopup.currentPwd = currentPwd;
+            let message = 'Saisir le mot de passe';
+            if (currentPwd=='') message = 'Initialiser le mot de passe';
+            
+            // Password
+            let settings = {
+            'title' : "Mot de passe",
+            'message' : "<center><br/>" + message + "<br/><br/><input type='password' id='txtPwd'></input></center>",
+            'type' : JSPopup.PopupType.OK,
+            'modal' : true,
+            'handler' : (res) => { 
+                    let pwd = $('#txtPwd').val();
+                    if ((JSPopup.currentPwd=='') && (pwd!='')) {
+                        me.setPassword(pwd).done(() => {
+                           window.document.location.reload(); 
+                        });
+                    }
+                    if (pwd!=JSPopup.currentPwd) {
+                        window.document.location.reload();
+                    }
+                    window.sessionStorage['CTPasswordOk'] = new Date().toISOString();
+                }
+            };
+            JSPopup.ShowPopup(settings); 
+        });
+    }
+}
+
+/*
 * Main CTM object
 */
 const ctMain = {
@@ -284,9 +355,11 @@ const ctMain = {
             ctMain.context.loadContext(config).done(() => {
                 ctMain.history = new CTHistory();
                 ctMain.history.load().done(() => {
-                    // Init components & build
+                    // get password
+                    new CTPasswordManager().showPopup();
+                   // Init components & build
                     new CTComponentManager().build().done(() => {
-                    });  
+                    });   
                 }); 
             });
         });

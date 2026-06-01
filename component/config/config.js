@@ -14,6 +14,8 @@ const ctConfig = {
         content += "<tr><td><input type='text' id='txtItemName' maxlength='20'></input></td><td><input type='number' id='txtItemDuration'></input></td><td><button onclick='ctConfig.clickAddItem()'>&#128221;</button></td></tr>";
         $("#tblConfiguration").html(content);
         $("#txtDailyDuration").val(ctMain.context.duration);
+
+         $("#btnDurationOk").click(() => ctConfig.clickDurationOk());
     },
     clickRemoveItem: (id) => {
         ctMain.context.removeRule(id);
@@ -30,9 +32,17 @@ const ctConfig = {
             ctMain.context.addRule(new CTRule(name, duration));
             ctMain.context.saveContext().done(() => {
                 ctConfig.initContent();
-                ctHome.initRulesList();       
+                ctHome.initRulesList();
             });
         }
+    },
+    clickDurationOk: () => {
+        let value = $('#txtDailyDuration').val();
+        ctMain.context.duration = value*1;
+        ctMain.context.saveContext().done(() => {
+            ctConfig.initContent();
+            ctHome.initTitle();
+        });
     }
 }
 
