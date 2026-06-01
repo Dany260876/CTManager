@@ -106,11 +106,11 @@ class CTContext {
                 me.locked = objContext.locked;
 
                 if (me.hasExpired() && configuration) {
-                    this.duration = configuration.dailyDuration;
-                    this.rules = configuration.rules;
-                    this.timestamp = new Date();
-                    this.history = [];
-                    this.locked = false;
+                    me.duration = configuration.dailyDuration;
+                    me.rules = configuration.rules;
+                    me.timestamp = new Date();
+                    me.history = [];
+                    me.locked = false;
                 }
                 res.resolve();
             }
