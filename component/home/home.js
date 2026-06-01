@@ -21,6 +21,13 @@ const ctHome = {
         // Fill select rules
         ctHome.initRulesList();
 
+        // Fill pwd attempts
+        new CTPasswordManager().getPasswordAttempts().done((pwdAttempts) => {
+            if (pwdAttempts) {
+                $('#divPwdMsg').html(pwdAttempts.length + ' tentative(s) de connexion (' + pwdAttempts[pwdAttempts.length-1] + ').')
+            }        
+        });
+            
         // Disable/enable content
         $("#btnCancel").prop('disabled',false);
         $("#btnTerminate").prop('disabled',false);
