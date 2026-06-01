@@ -67,8 +67,9 @@ const ctHome = {
         let ruleId = $("#selListRules").val();
         if (ruleId!='-') {
             ctMain.context.applyRule(ruleId*1);
-            ctMain.context.saveContext();
-            ctHome.initContent();
+            ctMain.context.saveContext().done(() => {
+                ctHome.initContent(); 
+            });
         }
     },
     clickTerminateContext: () => {
@@ -80,11 +81,13 @@ const ctHome = {
             'handler' : (res) => { 
                 if (res==2) {
                     ctMain.history.addItem(ctMain.context);
-                    ctMain.history.save();
-                    ctHisto.initContent(); // reload histo content
-                    ctMain.context.lock();
-                    ctMain.context.saveContext();
-                    ctHome.initContent();
+                    ctMain.history.save().done(() => {
+                        ctHisto.initContent(); // reload histo content
+                        ctMain.context.lock();
+                        ctMain.context.saveContext().done(() => {
+                            ctHome.initContent(); 
+                        });    
+                    });
                 }
             }
         };
@@ -100,8 +103,9 @@ const ctHome = {
                 if (res==2) {
                     ctMain.context.resetHistory();
                     ctMain.context.unlock();
-                    ctMain.context.saveContext();
-                    ctHome.initContent();
+                    ctMain.context.saveContext().done(() => {
+                        ctHome.initContent();    
+                    });
                 }
             }
         };
@@ -109,8 +113,9 @@ const ctHome = {
     },
     clickCancelInput : () => {
         if (ctMain.context.removeLastRule()) {
-            ctMain.context.saveContext();
-            ctHome.initContent();   
+            ctMain.context.saveContext().done(() => {
+               ctHome.initContent(); 
+            });
         }
     }
 }
