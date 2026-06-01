@@ -325,13 +325,19 @@ class CTPasswordManager {
             'modal' : true,
             'handler' : (res) => { 
                     let pwd = $('#txtPwd').val();
+					if (pwd=='') {
+                        window.document.location.reload(); 
+                        return;
+                    }
                     if ((JSPopup.currentPwd=='') && (pwd!='')) {
                         me.setPassword(pwd).done(() => {
-                           window.document.location.reload(); 
+                            window.document.location.reload(); 
+                            return;
                         });
                     }
                     if (pwd!=JSPopup.currentPwd) {
                         window.document.location.reload();
+                        return;
                     }
                     window.sessionStorage['CTPasswordOk'] = new Date().toISOString();
                 }
