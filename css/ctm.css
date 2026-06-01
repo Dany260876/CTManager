@@ -213,3 +213,8 @@ table.disabled {
     color: #999;
 }
 
+#divPwdMsg {
+    color: red;
+    font-size: small;
+    font-style: italic;
+}

@@ -303,6 +303,44 @@ class CTPasswordManager {
             });
         return res;
     }
+    getPasswordAttempts() {
+        let res = $.Deferred();
+        var me = this;
+        localforage.getItem('CTPasswordAttempts').then((data) => {
+            res.resolve(data);
+        }).catch(function(err) {
+            console.log(err);
+            res.reject();
+        });
+        return res;
+    }
+    clearPasswordAttempts() {
+        let res = $.Deferred();
+        var me = this;
+        localforage.removeItem('CTPasswordAttempts').then(() => {
+            res.resolve(data);
+        }).catch(function(err) {
+            console.log(err);
+            res.reject();
+        });
+        return res;
+    }
+    setPasswordAttempt() {
+        let res = $.Deferred();
+        this.getPasswordAttempts().done((data) => {
+            if (!data) data = [];
+            data.push(new Date().toLocaleString());            
+            localforage.setItem('CTPasswordAttempts', data)
+            .then(() => {
+                res.resolve();
+            })
+            .catch((err) => {
+                res.reject();
+                console.log(err);
+            });
+        });
+        return res;
+    }
     needPassword() {
         return window.sessionStorage['CTPasswordOk']==null;
     }
@@ -315,9 +353,8 @@ class CTPasswordManager {
             // Determine 1st password
             JSPopup.currentPwd = currentPwd;
             let message = 'Saisir le mot de passe';
-            if (currentPwd=='') message = 'Initialiser le mot de passe';
-            
-            // Password
+            if (currentPwd=='') message = 'Initialiser le mot de passe';              
+            // get Password
             let settings = {
             'title' : "Mot de passe",
             'message' : "<center><br/>" + message + "<br/><br/><input type='password' id='txtPwd'></input></center>",
@@ -325,8 +362,11 @@ class CTPasswordManager {
             'modal' : true,
             'handler' : (res) => { 
                     let pwd = $('#txtPwd').val();
-					if (pwd=='') {
-                        window.document.location.reload(); 
+                    if (pwd=='') {
+                        me.setPasswordAttempt().done(() => {
+                            window.document.location.reload();  
+                            return;
+                        });
                         return;
                     }
                     if ((JSPopup.currentPwd=='') && (pwd!='')) {
@@ -334,15 +374,20 @@ class CTPasswordManager {
                             window.document.location.reload(); 
                             return;
                         });
+                        return;
                     }
                     if (pwd!=JSPopup.currentPwd) {
-                        window.document.location.reload();
+                        me.setPasswordAttempt().done(() => {
+                            window.document.location.reload();
+                            return;    
+                        });
                         return;
                     }
                     window.sessionStorage['CTPasswordOk'] = new Date().toISOString();
+                    me.clearPasswordAttempts();
                 }
             };
-            JSPopup.ShowPopup(settings); 
+            JSPopup.ShowPopup(settings);
         });
     }
 }
