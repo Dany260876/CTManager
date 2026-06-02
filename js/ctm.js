@@ -398,6 +398,12 @@ class CTPasswordManager {
 const ctMain = {
     context : {},
     initialize : () => {
+
+        // Refresh on orientation change
+        $(window).on("orientationchange",() => {
+            if (JSPopup.isVisible) window.document.location.reload();
+        });
+        
         // load configuration
         let config = new CTConfiguration();
         config.load().done(() => {
