@@ -360,15 +360,9 @@ class CTPasswordManager {
             'message' : "<center><br/>" + message + "<br/><br/><input type='password' id='txtPwd'></input></center>",
             'type' : JSPopup.PopupType.OK,
             'modal' : true,
-            'handler' : (res) => { 
+            'handler' : (res) => {
                     let pwd = $('#txtPwd').val();
-                    if (pwd=='') {
-                        me.setPasswordAttempt().done(() => {
-                            window.document.location.reload();  
-                            return;
-                        });
-                        return;
-                    }
+                    // pwd creation
                     if ((JSPopup.currentPwd=='') && (pwd!='')) {
                         me.setPassword(pwd).done(() => {
                             window.document.location.reload(); 
@@ -376,17 +370,21 @@ class CTPasswordManager {
                         });
                         return;
                     }
-                    if (pwd!=JSPopup.currentPwd) {
+                    // pwd check
+                    if ((pwd=='') || (pwd!=JSPopup.currentPwd)) {
                         me.setPasswordAttempt().done(() => {
-                            window.document.location.reload();
-                            return;    
-                        });
-                        return;
+                            window.document.location.reload();  
+                            return;
+                        });    
                     }
-                    window.sessionStorage['CTPasswordOk'] = new Date().toISOString();
-                    me.clearPasswordAttempts();
+                    else {
+                        window.sessionStorage['CTPasswordOk'] = new Date().toISOString();
+                        me.clearPasswordAttempts();
+                        $('#divMain').show();   
+                    }
                 }
             };
+            $('#divMain').hide();
             JSPopup.ShowPopup(settings);
         });
     }
@@ -412,10 +410,10 @@ const ctMain = {
             ctMain.context.loadContext(config).done(() => {
                 ctMain.history = new CTHistory();
                 ctMain.history.load().done(() => {
-                    // get password
-                    new CTPasswordManager().showPopup();
                    // Init components & build
                     new CTComponentManager().build().done(() => {
+                        // get password
+                        new CTPasswordManager().showPopup();
                     });   
                 }); 
             });
