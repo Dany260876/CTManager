@@ -218,3 +218,7 @@ table.disabled {
     font-size: small;
     font-style: italic;
 }
+
+.tdActionRules {
+    width: 45px;
+}

@@ -4,19 +4,37 @@
         <table>
             <tr>
                 <td>
+                    Réinitialiser le mot de passe
+                </td>
+                <td class='tdActionRules'>
+                    <button id='btnInitPwd'>&#128274;</button>
+                </td>
+            </tr>
+        </table>
+    </p>
+    <p>
+        <table>
+            <tr>
+                <td>
                     Durée (mn)
                 </td>
                 <td>
                     <input type='number' id='txtDailyDuration'></input>
                 </td>
-                <td>
+                <td class='tdActionRules'>
                     <button id='btnDurationOk'>&#128221;</button>
                 </td>
             </tr>
         </table>
     </p>
     <p>
-        Liste de règles :
+        <table>
+            <tr>
+                <td>Liste de règles :</td>
+                <td class='tdActionRules'><button id='btnExportRules'>&#128228;</button></td>
+                <td class='tdActionRules'><button id='btnImportRules'>&#128229;</button></td>
+            </tr>
+        </table>
         <table id='tblConfiguration'></table>
     </p>
 </div>

@@ -4,6 +4,7 @@ const ctConfig = {
         ctConfig.initContent();
     },
     initContent: () => {
+        // init content
         let content = "";
         content += "<tr class='header'><td>Nom</td><td>Valeur</td><td></td></tr>";
         ctMain.context.rules.forEach((rule,i) => { 
@@ -12,10 +13,13 @@ const ctConfig = {
             content += "<tr class='" + rowClass + "'><td>" + rule.name + "</td><td>" + rule.duration + "</td><td><button onclick='ctConfig.clickRemoveItem(" + rule.id + ")'>&#10060;</button></td></tr>";
         });
         content += "<tr><td><input type='text' id='txtItemName' maxlength='20'></input></td><td><input type='number' id='txtItemDuration'></input></td><td><button onclick='ctConfig.clickAddItem()'>&#128221;</button></td></tr>";
-        $("#tblConfiguration").html(content);
+        $("#tblConfiguration").html(content);       
         $("#txtDailyDuration").val(ctMain.context.duration);
 
-         $("#btnDurationOk").click(() => ctConfig.clickDurationOk());
+        // init actions
+        $("#btnDurationOk").click(() => ctConfig.clickDurationOk());
+        $("#btnExportRules").click(() => ctConfig.clickExportRules());
+        $("#btnImportRules").click(() => ctConfig.clickImportRules());
     },
     clickRemoveItem: (id) => {
         ctMain.context.removeRule(id);
@@ -43,7 +47,45 @@ const ctConfig = {
             ctConfig.initContent();
             ctHome.initTitle();
         });
-    }
+    },
+    clickExportRules: () => {
+        let encodedContent = btoa(JSON.stringify(ctMain.context.rules));
+        let content = "";
+        content += "<tr><td colspan=2><input type='text' id='txtExportRule' value='" + encodedContent + "'/></td></tr>";
+        content += "<tr>";
+        content += "<td></td>";
+        content += "<td class='tdActionRules'><button id='btnCloseExport'>&#10060;</button></td>";
+        content += "</tr>";
+        $("#tblConfiguration").html(content);
+        $("#btnCloseExport").click(() => {
+            ctConfig.initContent();
+        });
+    },
+    clickImportRules: () => {
+        let content = "";
+        content += "<tr><td colspan=2><input type='text' id='txtExportRule'/></td></tr>";
+        content += "<tr>";
+        content += "<td></td>";
+        content += "<td class='tdActionRules'><button id='btnValidateExport'>&#9989;</button></td>";
+        content += "</tr>";
+        $("#tblConfiguration").html(content);
+        $("#btnValidateExport").click(() => {
+            let encodedValue = $('#txtExportRule').val();
+            if (encodedValue!='') {
+                let decodedValue = atob(encodedValue);
+                let obj = JSON.parse(decodedValue);
+                if ((obj.length>0) && (obj[0].id)) {
+                    ctMain.context.rules = obj;
+                    ctMain.context.saveContext().done(() => {
+                        ctConfig.initContent();
+                        ctHome.initRulesList();
+                        return;
+                    });
+                }
+            }
+            ctConfig.initContent();
+        });
+    },
 }
 
 ctConfig.initialize();
