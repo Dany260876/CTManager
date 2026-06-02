@@ -21,7 +21,7 @@ const ctMenu = {
         if (idMenu=='home') $("#divContent").addClass('visible').removeClass('hidden');
         if (idMenu=='config') $("#divConfiguration").addClass('visible').removeClass('hidden');
         if (idMenu=='histo') $("#divHistory").addClass('visible').removeClass('hidden');
-    },
+    }
 }
 
 ctMenu.initialize();
