@@ -106,8 +106,6 @@ class CTContext {
                 me.locked = objContext.locked;
 
                 if (me.hasExpired() && configuration) {
-                    me.duration = configuration.dailyDuration;
-                    me.rules = configuration.rules;
                     me.timestamp = new Date();
                     me.history = [];
                     me.locked = false;
@@ -294,6 +292,18 @@ class CTPasswordManager {
     setPassword(pwd) {
         let res = $.Deferred();
         localforage.setItem('CTPassword', pwd)
+            .then(() => {
+                res.resolve();
+            })
+            .catch((err) => {
+                res.reject();
+                console.log(err);
+            });
+        return res;
+    }
+    removePassword() {
+        let res = $.Deferred();
+        localforage.removeItem('CTPassword')
             .then(() => {
                 res.resolve();
             })

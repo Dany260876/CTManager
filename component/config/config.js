@@ -20,6 +20,7 @@ const ctConfig = {
         $("#btnDurationOk").click(() => ctConfig.clickDurationOk());
         $("#btnExportRules").click(() => ctConfig.clickExportRules());
         $("#btnImportRules").click(() => ctConfig.clickImportRules());
+        $("#btnInitPwd").click(() => ctConfig.clickInitPwd());
     },
     clickRemoveItem: (id) => {
         ctMain.context.removeRule(id);
@@ -86,6 +87,24 @@ const ctConfig = {
             ctConfig.initContent();
         });
     },
+    clickInitPwd:() => {
+
+        let settings = {
+            'title' : "R&eacute;init mot de passe",
+            'message' : "Confirmez-vous la r&eacute;initialisation du mot de passe ?<br/><br/>Cela supprimera le mot de passe en cours et vous serez d&eacute;connect&eacute;.",
+            'type' : JSPopup.PopupType.YES_NO,
+            'modal' : true,
+            'handler' : (res) => { 
+                if (res==2) {
+                    new CTPasswordManager().removePassword().done(() => {
+                        window.sessionStorage.removeItem('CTPasswordOk');
+                        window.document.location.reload(); 
+                    });          
+                }
+            }
+        };
+        JSPopup.ShowPopup(settings);
+    }
 }
 
 ctConfig.initialize();
