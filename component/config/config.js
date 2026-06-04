@@ -1,3 +1,8 @@
+import ctMain from '../../js/ctm.js'
+import ctHome from '../home/home.js'
+import CTPasswordManager from '../../class/CTPasswordManager.js'
+import CTRule from '../../class/CTRule.js'
+
 const ctConfig = {
     initialize : () => {
         // Load page
@@ -10,19 +15,22 @@ const ctConfig = {
         ctMain.context.rules.forEach((rule,i) => { 
             let rowClass = 'odd';
             if (i%2==0) rowClass = 'even';
-            content += "<tr class='" + rowClass + "'><td>" + rule.name + "</td><td>" + rule.duration + "</td><td><button onclick='ctConfig.clickRemoveItem(" + rule.id + ")'>&#10060;</button></td></tr>";
+            content += "<tr class='" + rowClass + "'><td>" + rule.name + "</td><td>" + rule.duration + "</td><td><button data-id='" + rule.id + " ' class='btnRemoveItem'>&#10060;</button></td></tr>";
         });
-        content += "<tr><td><input type='text' id='txtItemName' maxlength='20'></input></td><td><input type='number' id='txtItemDuration'></input></td><td><button onclick='ctConfig.clickAddItem()'>&#128221;</button></td></tr>";
+        content += "<tr><td><input type='text' id='txtItemName' maxlength='20'></input></td><td><input type='number' id='txtItemDuration'></input></td><td><button class='btnAddItem'>&#128221;</button></td></tr>";
         $("#tblConfiguration").html(content);       
         $("#txtDailyDuration").val(ctMain.context.duration);
-
+       
         // init actions
+        $(".btnRemoveItem").click(() => ctConfig.clickRemoveItem());
+        $(".btnAddItem").click(() => ctConfig.clickAddItem());
         $("#btnDurationOk").click(() => ctConfig.clickDurationOk());
         $("#btnExportRules").click(() => ctConfig.clickExportRules());
         $("#btnImportRules").click(() => ctConfig.clickImportRules());
         $("#btnInitPwd").click(() => ctConfig.clickInitPwd());
     },
-    clickRemoveItem: (id) => {
+    clickRemoveItem: () => {
+        let id = $(event.srcElement).data('id')*1;
         ctMain.context.removeRule(id);
         ctMain.context.saveContext().done(() => {
             ctConfig.initContent();
@@ -108,3 +116,5 @@ const ctConfig = {
 }
 
 ctConfig.initialize();
+
+export default ctConfig;

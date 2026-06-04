@@ -1,10 +1,10 @@
 <html>
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<script src="./js/ctm.js"></script>
 		<script src="./js/jquery-4.0.0.min.js"></script>
 		<script src="./js/jspopup.js"></script>
 		<script src="./js/localforage.min.js"></script>
+		<script type="module" src="./js/ctm.js"></script>
 		<link href="./css/ctm.css" rel="stylesheet">
 		<link rel="manifest" href="manifest.json">
 	</head>
@@ -16,7 +16,8 @@
 			<div id='divHistory' class='content hidden'></div>
 		</div>
 	</body>
-	<script>
+	<script type="module">
+		import ctMain from "./js/ctm.js";
 		ctMain.initialize();
 	</script>
 </html>
