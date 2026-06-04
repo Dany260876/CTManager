@@ -1,3 +1,5 @@
+import ctMain from '../../js/ctm.js';
+
 const ctHisto = {
     initialize : () => {
         // Load page
@@ -35,3 +37,5 @@ const ctHisto = {
 }
 
 ctHisto.initialize();
+
+export default ctHisto;

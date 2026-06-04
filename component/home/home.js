@@ -1,3 +1,7 @@
+import ctMain from '../../js/ctm.js'
+import ctHisto from '../histo/histo.js'
+import CTPasswordManager from '../../class/CTPasswordManager.js'
+
 const ctHome = {
     initialize : () => {
         // Load page
@@ -43,7 +47,7 @@ const ctHome = {
     },
     initRulesHistory: () => {
         // build history
-        content = "<tr class='header'><td>Heure</td><td>Nom</td><td>Dur&eacute;e (mn)</td><td></td></tr>";
+        let content = "<tr class='header'><td>Heure</td><td>Nom</td><td>Dur&eacute;e (mn)</td><td></td></tr>";
         if (ctMain.context.history.length>0)
             ctMain.context.history.forEach((histo,i) => {
                 let rowClass = 'odd', emo = "";
@@ -66,7 +70,7 @@ const ctHome = {
     },
     initRulesList: () => {
         // fill select rules
-        content = "<option value='-'>-</option>";
+        let content = "<option value='-'>-</option>";
         ctMain.context.rules.forEach((rule,i) => content += "<option value='" + rule.id + "'>" + rule.name + " (" + rule.duration +  "mn)</option>");
         $("#selListRules").html(content);
     },
@@ -128,3 +132,5 @@ const ctHome = {
 }
 
 ctHome.initialize();
+
+export default ctHome;
